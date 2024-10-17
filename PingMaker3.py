@@ -36,8 +36,9 @@ def PingandWrite(Address):
       with open("/home/PingMaker/csv/"+Address+".csv", "a") as statfilecsv:
         statfilecsv.write("\n"+timeOfPing+","+packetLoss+","+responseTime)
       if int((time.time()-timeOfStart)/60/60) == 6:
+        newFileileName = Address+"_"+str(timeOfPing).replace("/","_").replace(":","-")
+        subprocess.Popen("mv /home/PingMaker/csv/"+Address+".csv"+" /home/PingMaker/csv/"+newFileName), shell=True, stdout=subprocess.PIPE)
         timeOfStart = time.time()
-        subprocess.Popen("mv /home/PingMaker/csv/"+Address+" /home/PingMaker/csv/"+Address+"_PingSet_"+str(filesTotal), shell=True, stdout=subprocess.PIPE)
           #####Rotate old files
     else:
       if errorFileNotCreated:
