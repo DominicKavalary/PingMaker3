@@ -26,14 +26,14 @@ def PingandWrite(Address):
     responseTime = ""
     for line in output:
       if "% packet loss" in line:
-        packetLoss = line.split(', ')[2].split(" ")[0])
+        packetLoss = line.split(', ')[2].split(" ")[0]
       elif "bytes from" in line:
         infoFound = True
         responseTime = line[line.find("time"):]
     if infoFound:
       time.sleep(1)
       with open("/home/PingMaker/csv/"+Address+".csv", "a") as statfilecsv:
-        statfilecsv.write("\n"+timeofPing+","+packetLoss+","+responseTime)
+        statfilecsv.write("\n"+timeOfPing+","+packetLoss+","+responseTime)
     else:
       if errorFileNotCreated:
         with open("/home/PingMaker/errors/"+Address, "a") as errfile:
