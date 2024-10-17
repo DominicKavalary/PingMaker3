@@ -75,10 +75,10 @@ def testTargetRegex(Address):
 #Ping and write thread function#
 def PingandWrite(Address):
   timeOfStart = time.time()
+  tempFileName = "/home/PingMaker/csv/"+Address+"/"+Address+".csv"
   while 1 == 1:
 # get ping response and store in array
     pingArray = getPingInfo(Address)
-    tempFileName = "/home/PingMaker/csv/"+Address+"/"+Address+".csv"
 # open the target's directory and append to its data file
     with open(tempFileName, "a") as tmp:
       tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
