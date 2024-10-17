@@ -39,6 +39,7 @@ def PingandWrite(Address):
         with open("/home/PingMaker/errors/"+Address, "a") as errfile:
           errfile.write("\nNo info found for: "+Address+", check format of address")
         errorFileNotCreated = False
+      time.sleep(10) # for now do a wait of ten, in the future make the process temrinate itself
 
 
 ####Create Directorys#####
