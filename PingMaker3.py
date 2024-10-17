@@ -4,6 +4,7 @@ import time
 import threading
 import subprocess
 import ipaddress
+import re
 
 ##Functions###
 #subprocess outputgrab function#
@@ -31,7 +32,7 @@ def getPingInfo(Address):
   return [timeOfPing,packetLoss,responseTime]
   
 # write a function where ti testrs if its an error or not then if it is do add it if it isnt dont add it to targets#
-def testTarget(Target):
+def testTarget(Address):
 #look for info in the output
   command = "ping -c 1 " + Address
   output = getOutput(command)
@@ -47,6 +48,17 @@ def testTarget(Target):
       errfile.write("\nNo info found for: "+Address+", check format of address")
   # regardless, return the value of infoFound so the code knows what to do
   return infoFound
+
+def testTargetRegex(Address):
+  regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+  if re.search(regex, Address):
+    return True
+  else:
+    regex = "[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]" + "{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)"
+    if re.search(regex,Address):
+      return True
+    else:
+      False
   
 #Ping and write thread function#
 def PingandWrite(Address):
