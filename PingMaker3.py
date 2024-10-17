@@ -36,11 +36,11 @@ def getPingInfo(Address):
   elif testTargetDeep(Address) == False:
 # if the input isnt found, add the address to the error file. Try and find a way of killing the processes instead. such as, when you first make the process can you create a processname, then search for that process name and kill it
     with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
-      errfile.write("\nDeep ping test failed for: "+Address+", check format of address")
+      errfile.write("\nDeep ping test failed for: "+Address+" at "+timeOfPing+", check format of address")
       time.sleep(60)
   else:
     with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
-      errfile.write("\nUnknown error for: "+Address)
+      errfile.write("\nUnknown error for: "+Address+" at "+timeOfPing)
       time.sleep(60)
   
 # write a function where ti testrs if its an error or not then if it is do add it if it isnt dont add it to targets#
