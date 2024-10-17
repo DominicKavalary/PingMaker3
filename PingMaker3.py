@@ -26,13 +26,24 @@ def getPingInfo(Address):
   infoFound = False
   for line in output:
     if "% packet loss" in line:
+      infoFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
     elif "bytes from" in line:
+      infoFound = True
       responseTime = line[line.find("time"):]
-  return [timeOfPing,packetLoss,responseTime]
+  if infoFound == True:
+    return [timeOfPing,packetLoss,responseTime]
+  elif testTargetDeep(Address) == False:
+# if the input isnt found, add the address to the error file
+    with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
+      errfile.write("\nDeep ping test failed for: "+Address+", check format of address")
+  else:
+    with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
+      errfile.write("\nUnknown error for: "+Address)
+      time.sleep(60)
   
 # write a function where ti testrs if its an error or not then if it is do add it if it isnt dont add it to targets#
-def testTarget(Address):
+def testTargetDeep(Address):
 #look for info in the output
   command = "ping -c 1 " + Address
   output = getOutput(command)
@@ -42,10 +53,6 @@ def testTarget(Address):
         infoFound = True
       elif "bytes from" in line:
         infoFound = True
-  # if the input isnt found, add the address to the error file
-  if infoFound == False:
-    with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
-      errfile.write("\nNo info found for: "+Address+", check format of address")
   # regardless, return the value of infoFound so the code knows what to do
   return infoFound
 
@@ -58,6 +65,8 @@ def testTargetRegex(Address):
     if re.search(regex,Address):
       return True
     else:
+      with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
+        errfile.write("\nRegex test failed for: "+Address+", check format of address")
       False
   
 #Ping and write thread function#
@@ -101,7 +110,7 @@ with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
       ListofTargets.append(line.replace("\n",""))
 # for every target in the list you just made, test them to see if they are valid targets, if so make their target directories. this is where their csv files will be stored.
 for target in ListofTargets:
-  if testTarget(target):
+  if testTargetRegex(target):
     subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
   else:
     ListofTargets.remove(target)
