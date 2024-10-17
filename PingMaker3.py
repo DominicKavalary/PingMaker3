@@ -43,19 +43,19 @@ def PingandWrite(Address):
         tmp.write("\n"+timeOfPing+","+packetLoss+","+responseTime)
 # if it has been 6 hours since the file has been rotated, take the current temp file and change its name so you can start making a new temp file
       if int((time.time()-timeOfStart)/60/60) == 6:
-        newFileileName = Address+"_"+str(timeOfPing).replace("/","_").replace(":","-")
+        newFileileName = Address+"_"+str(timeOfPing).replace("/","_").replace(":","-")+".csv"
         subprocess.Popen("mv "+tempFileName+" /home/PingMaker/csv/"+Address+"/"+newFileName), shell=True, stdout=subprocess.PIPE)
         timeOfStart = time.time()
 # now make a new temp file
         with open(tempFileName, "a+") as tmpNew:
           tmpNew.write("timeofPing,packetLoss,responseTime")
-# if no info was found, create an error file
+# if no info was found, create an error file. then mark the errorFileNotCreated to False so that it doesnt keep writing to the file every time. Once again, make a function to test all addresses beforehand, and for the ones that fail add their addresses to a single text file with the name including the timestamp of when the error checking happened
     else:
       if errorFileNotCreated:
         with open("/home/PingMaker/errors/"+Address, "a") as errfile:
           errfile.write("\nNo info found for: "+Address+", check format of address")
         errorFileNotCreated = False
-      time.sleep(60) # for now do a wait of 60 seconds before it tries again, in the future make the process temrinate itself
+      time.sleep(60) # for now do a wait of 60 seconds before it tries again, in the future make the process temrinate itself, OR make the functon to test all pings beforehand to validate targets, and remove invalid from the list of targets so you dont even have to do this here.
 
 
 ####Create Directorys#####
