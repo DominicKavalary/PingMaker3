@@ -16,8 +16,7 @@ def getOutput(Command):
 
 #Ping and write thread function#
 def PingandWrite(Address):
-  pingCount = 0
-  filesTotal = 1
+  timeOfStart = time.time()
   errorFileNotCreated = True
   while 1 == 1:
     timeOfPing = time.strftime("%D:%H:%M:%S")
@@ -36,13 +35,9 @@ def PingandWrite(Address):
       time.sleep(1)
       with open("/home/PingMaker/csv/"+Address+".csv", "a") as statfilecsv:
         statfilecsv.write("\n"+timeOfPing+","+packetLoss+","+responseTime)
-      pingCount = pingCount + 1
-      ##Experimental
-      if pingCount == 40000:
-        pingCount = 0
+      if int((time.time()-timeOfStart)/60/60) == 6:
+        timeOfStart = time.time()
         subprocess.Popen("mv /home/PingMaker/csv/"+Address+" /home/PingMaker/csv/"+Address+"_PingSet_"+str(filesTotal), shell=True, stdout=subprocess.PIPE)
-        filesTotal = filesTotal + 1
-        if filesTotal == 8:
           #####Rotate old files
     else:
       if errorFileNotCreated:
