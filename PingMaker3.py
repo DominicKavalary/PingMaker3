@@ -109,10 +109,10 @@ def testTargetRegex(Address):
       return False
 #Ping and write sub thread for rapid pings even on failures#
 def SubPingandWrite(Address):
-   pingArray = getPingInfo(Address)
+  pingArray = getPingInfo(Address)
 # open the target's directory and append to its data file
-    with open(tempFileName, "a") as tmp:
-      tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
+  with open(tempFileName, "a") as tmp:
+    tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
 
 #Ping and write thread function#
 def MainPingandWrite(Address):
