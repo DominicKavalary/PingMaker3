@@ -42,10 +42,6 @@ def testTargetDeep(Address,timeOfPing,output):
   errMessageFound = False
   message=""
   for line in output:
-    if "% packet loss" in line:
-      lossFound = True
-    elif "bytes from" in line:
-      bytesFound = True
     if "Temporary failure in name resolution" in line or "Name or service not known" in line or "Destination Host Unreachable" in line or "Network is unreachable" in line:
       errMessageFound = True
       message = line.replace("\n","")
@@ -70,7 +66,7 @@ def getPingInfo(Address):
       lossFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
       if bytesFound == False:
-        reponseTime = "NA"
+        responseTime = "NA"
         if "errors" in line:
           testTargetDeep(Address,timeOfPing,output)
     elif "bytes from" in line:
