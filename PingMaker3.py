@@ -80,7 +80,7 @@ def getPingInfo(Address):
       lossFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
       if bytesFound == False:
-        responseTime = line.split(', ')[3].split(" ")[1]
+        responseTime = "NA"
     elif "bytes from" in line:
       bytesFound = True
       responseTime = line[line.find("time"):]
@@ -107,28 +107,31 @@ def testTargetRegex(Address):
     else:
       errWrite(Address,"Regex test failed for: ")
       return False
-  
+#Ping and write sub thread for rapid pings even on failures#
+def SubPingandWrite(Address):
+   pingArray = getPingInfo(Address)
+# open the target's directory and append to its data file
+    with open(tempFileName, "a") as tmp:
+      tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
+
 #Ping and write thread function#
-def PingandWrite(Address):
+def MainPingandWrite(Address):
   print("thread for "+Address+" Started")    
   timeOfStart = time.time()
   tempFileName = "/home/PingMaker/csv/"+Address+"/"+Address+".csv"
   while 1 == 1:
 # get ping response and store in array
-    pingArray = getPingInfo(Address)
-    if "na" not in pingArray:
-      time.sleep(1)
-# open the target's directory and append to its data file
-    with open(tempFileName, "a") as tmp:
-      tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
+    SubPingThread = threading.Thread(target=SubPingandWrite, args=(Address,))
+    SubPingThread.start()
+    time.sleep(1)
 # if it has been 6 hours since the file has been rotated, take the current temp file and change its name so you can start making a new temp file
-      if int((time.time()-timeOfStart)/60/60) == 6:
-        newFileileName = Address+"_"+str(timeOfPing).replace("/","_").replace(":","-")+".csv"
-        subprocess.Popen("mv "+tempFileName+" /home/PingMaker/csv/"+Address+"/"+newFileName, shell=True, stdout=subprocess.PIPE)
-        timeOfStart = time.time()
+    if int((time.time()-timeOfStart)/60/60) == 6:
+      newFileileName = Address+"_"+str(timeOfPing).replace("/","_").replace(":","-")+".csv"
+      subprocess.Popen("mv "+tempFileName+" /home/PingMaker/csv/"+Address+"/"+newFileName, shell=True, stdout=subprocess.PIPE)
+      timeOfStart = time.time()
 # now make a new temp file
-        with open(tempFileName, "a+") as tmpNew:
-          tmpNew.write("timeofPing,packetLoss,responseTime")
+      with open(tempFileName, "a+") as tmpNew:
+        tmpNew.write("timeofPing,packetLoss,responseTime")
 
 ####MAIN####
 ####Create Directorys#####
@@ -167,8 +170,9 @@ print("All files created")
 ####multithres ping targets and wirte to file###
 # for every address in your list of targets, start their own ping and write subprocess for them to run
 for Address in ListofTargets:
-  PingThread = threading.Thread(target=PingandWrite, args=(Address,))
+  PingThread = threading.Thread(target=MainPingandWrite, args=(Address,))
   PingThread.start()
-print("All processes created")  
+print("All main processes created")  
 
 #####look into interupted code, maybe add an exit thing that will look in all target directories, then rename the temp file to tempfile_interupted or something similar.
+###make main ping thread and then ping subthreads
