@@ -78,7 +78,7 @@ def getPingInfo(Address):
     elif "bytes from" in line:
       bytesFound = True
       responseTime = line[line.find("time"):]
-  if lossFound && bytesFound:
+  if lossFound and bytesFound:
     return [timeOfPing,packetLoss,responseTime]
   elif testTargetDeep(Address) == False:
 # if the input isnt found, add the address to the error file. Try and find a way of killing the processes instead. such as, when you first make the process can you create a processname, then search for that process name and kill it
