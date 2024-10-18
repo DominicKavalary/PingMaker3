@@ -108,10 +108,10 @@ def testTargetRegex(Address):
       errWrite(Address,"Regex test failed for: ")
       return False
 #Ping and write sub thread for rapid pings even on failures#
-def SubPingandWrite(Address):
+def SubPingandWrite(Address,TmpName):
   pingArray = getPingInfo(Address)
 # open the target's directory and append to its data file
-  with open(tempFileName, "a") as tmp:
+  with open(TmpName, "a") as tmp:
     tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
 
 #Ping and write thread function#
@@ -121,7 +121,7 @@ def MainPingandWrite(Address):
   tempFileName = "/home/PingMaker/csv/"+Address+"/"+Address+".csv"
   while 1 == 1:
 # get ping response and store in array
-    SubPingThread = threading.Thread(target=SubPingandWrite, args=(Address,))
+    SubPingThread = threading.Thread(target=SubPingandWrite, args=(Address,tempFileName,))
     SubPingThread.start()
     time.sleep(1)
 # if it has been 6 hours since the file has been rotated, take the current temp file and change its name so you can start making a new temp file
