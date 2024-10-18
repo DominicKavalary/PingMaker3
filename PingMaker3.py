@@ -78,14 +78,20 @@ def getPingInfo(Address):
     
 ##Fast regex test for address validation###
 def testTargetRegex(Address):
+  print("-------------REGEX test for : "+Address)
   regex = r"^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+  print("-------------search REGEX 1: "+Address)
   if re.search(regex, Address):
+    print("-------------1 ZCOMPLETE GOOD: "+Address)
     return True
   else:
+    print("-------------1 BAD NOW OTHER: "+Address)
     regex = "[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]" + "{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)"
     if re.search(regex,Address):
+      print("-------------2 GOOD: "+Address)
       return True
     else:
+      print("-------------ALL REGEX BAD: "+Address)
       errWrite(Address,"Regex test failed for: ")
       return False
   
@@ -135,9 +141,12 @@ for target in ListofTargets:
   print("-----------------tsrget is "+ target.replace("\n",""))
   if testTargetRegex(target):
     print("-------------TRUE REGEX: "+target)
-    subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
+    proc = subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
+    proc.wait()
   else:
+    print("-------------DIDNT FUCXKING WORK: "+target)
     ListofTargets.remove(target)
+    print(ListofTargets)
   time.sleep(1)
 # now for every target in your list, append the csv header info to the file
 for target in ListofTargets:
