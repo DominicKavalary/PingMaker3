@@ -102,7 +102,7 @@ def PingandWrite(Address):
 # if it has been 6 hours since the file has been rotated, take the current temp file and change its name so you can start making a new temp file
       if int((time.time()-timeOfStart)/60/60) == 6:
         newFileileName = Address+"_"+str(timeOfPing).replace("/","_").replace(":","-")+".csv"
-        subprocess.Popen("mv "+tempFileName+" /home/PingMaker/csv/"+Address+"/"+newFileName), shell=True, stdout=subprocess.PIPE)
+        subprocess.Popen("mv "+tempFileName+" /home/PingMaker/csv/"+Address+"/"+newFileName, shell=True, stdout=subprocess.PIPE)
         timeOfStart = time.time()
 # now make a new temp file
         with open(tempFileName, "a+") as tmpNew:
