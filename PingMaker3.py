@@ -91,20 +91,14 @@ def getPingInfo(Address):
     
 ##Fast regex test for address validation###
 def testTargetRegex(Address):
-  print("-------------REGEX test for : "+Address)
   regex = r"^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
-  print("-------------search REGEX 1: "+Address)
   if re.search(regex, Address):
-    print("-------------1 ZCOMPLETE GOOD: "+Address)
     return True
   else:
-    print("-------------1 BAD NOW OTHER: "+Address)
     regex = "[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]" + "{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)"
     if re.search(regex,Address):
-      print("-------------2 GOOD: "+Address)
       return True
     else:
-      print("-------------ALL REGEX BAD: "+Address)
       errWrite(Address,"Regex test failed for: ")
       return False
   
@@ -135,10 +129,8 @@ time.sleep(1)
 
 # grab a list of targets from the target file
 ListofTargets = []
-print("-----------------Grabbing list of targets------------------------")
 with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
   for line in targetFile:
-    print("-----------------line is "+line.replace("\n",""))
 # check if there is an address range deliniated by cidr notation, if so, then get all available addresses and add them individually to list of targets
     if "/" in line:
       usableSubnet = [str(ip) for ip in ipaddress.IPv4Network(line.replace("\n",""))]
@@ -146,20 +138,14 @@ with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
         ListofTargets.append(str(ip))
     else:
 # if there is no address range, add it as a singular host
-      print("-----------------single host is "+line.replace("\n",""))
       ListofTargets.append(line.replace("\n",""))
 # for every target in the list you just made, test them to see if they are valid targets, if so make their target directories. this is where their csv files will be stored.
-print("--------------------for target in list subprocess make directories---------------------------------------")
-
 listofBAD = []
 for target in ListofTargets:
-  print("-----------------tsrget is "+ target.replace("\n",""))
   if testTargetRegex(target):
-    print("-------------TRUE REGEX: "+target)
     proc = subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
     proc.wait()
   else:
-    print("-------------DIDNT FUCXKING WORK: "+target)
     listofBAD.append(target)
   time.sleep(1)
 for target in listofBAD:
