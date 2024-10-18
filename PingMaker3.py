@@ -169,4 +169,4 @@ for Address in ListofTargets:
 print("All main processes created")  
 
 #####look into interupted code, maybe add an exit thing that will look in all target directories, then rename the temp file to tempfile_interupted or something similar.
-###make main ping thread and then ping subthreads
+###find out why message errors arent populatinmg the errfile
