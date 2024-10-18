@@ -159,7 +159,7 @@ for target in ListofTargets:
     proc.wait()
   else:
     listofBAD.append(target)
-  time.sleep(1)
+time.sleep(2)
 for target in listofBAD:
   ListofTargets.remove(target)
 # now for every target in your list, append the csv header info to the file
@@ -176,4 +176,4 @@ print("All main processes created")
 
 #####look into interupted code, maybe add an exit thing that will look in all target directories, then rename the temp file to tempfile_interupted or something similar.
 ###find out why message errors arent populatinmg the errfile
-dont do the wait after making directories, do a sleep for 2 seconds after the last call
+##dont do the wait after making directories, do a sleep for 2 seconds after the last call
