@@ -51,8 +51,8 @@ def testTargetDeep(Address,timeOfPing,output):
         message = line.replace("\n","")
   if not lossFound or not bytesFound:
     errWrite(Address,"Deep Ping test failed at"+timeOfPing+", no Packet Loss found or no Bytes returned: ")
-      if errMessageFound:
-        errWrite(Address,"Deep Ping test failed at"+timeOfPing+", error message given: "+message+"")
+    if errMessageFound:
+      errWrite(Address,"Deep Ping test failed at"+timeOfPing+", error message given: "+message+"")
   else:
     errWrite(Address, "Unknown fail at"+timeOfPing+",: ")
 
