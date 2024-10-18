@@ -127,7 +127,7 @@ with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
         ListofTargets.append(str(ip))
     else:
 # if there is no address range, add it as a singular host
-      print("-----------------single host is "+line.replace("\n","")))
+      print("-----------------single host is "+line.replace("\n",""))
       ListofTargets.append(line.replace("\n",""))
 # for every target in the list you just made, test them to see if they are valid targets, if so make their target directories. this is where their csv files will be stored.
 print("--------------------for target in list subprocess make directories---------------------------------------")
