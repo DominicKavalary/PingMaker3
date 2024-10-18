@@ -111,21 +111,22 @@ def MainPingandWrite(Address):
     time.sleep(1)
 # if it has been 6 hours since the file has been rotated, take the current temp file and change its name so you can start making a new temp file
     if int((time.time()-timeOfStart)/60/60) == 6:
-      newFileileName = Address+"_"+str(time.strftime("%D:%H:%M:%S")).replace("/","_").replace(":","-")+".csv"
+      newFileName = Address+"_"+str(time.strftime("%D:%H:%M:%S")).replace("/","_").replace(":","-")+".csv"
       subprocess.Popen("mv "+tempFileName+" /home/PingMaker/csv/"+Address+"/"+newFileName, shell=True, stdout=subprocess.PIPE)
       timeOfStart = time.time()
 # now make a new temp file
+      ###################NONE OF TRHE BLEOW WORKS
       with open(tempFileName, "a+") as tmpNew:
         tmpNew.write("timeofPing,packetLoss,responseTime")
-      count = int(getOutput("ls /home/PingMaker/csv/"+Address+" | wc -l"))
+      count = int(getOutput("ls /home/PingMaker/csv/"+Address+" | wc -l")[0])
       if count > 6:
-        oldestFile = getOutput("ls -lt /home/PingMaker/csv/"+Address+" | tail -1")
+        oldestFile = getOutput("ls -lt /home/PingMaker/csv/"+Address+" | tail -1")[0]
         oldestFile = oldestFile.split(" ")[8]
         subprocess.Popen("rm -f /home/PingMaker/csv/"+Address+"/"+oldestFile, shell=True, stdout=subprocess.PIPE)
         with open("rotatedlogs.txt", "a+") as logfile:
           logfile.write("\n"+oldestFile)
           
-
+############THIS DOESNT WORK^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ####MAIN####
 ####Create Directorys#####
