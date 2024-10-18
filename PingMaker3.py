@@ -119,6 +119,15 @@ def MainPingandWrite(Address):
 # now make a new temp file
       with open(tempFileName, "a+") as tmpNew:
         tmpNew.write("timeofPing,packetLoss,responseTime")
+      count = int(getOutput("ls /home/PingMaker/csv/"+Address+" | wc -l"))
+      if count > 6:
+        oldestFile = getOutput("ls -lt /home/PingMaker/csv/"+Address+" | tail -1")
+        oldestFile = oldestFile.split(" ")[8]
+        subprocess.Popen("rm -f /home/PingMaker/csv/"+oldestFile, shell=True, stdout=subprocess.PIPE)
+        with open("rotatedlogs.txt", "a+") as logfile:
+        logfile.write("\n"+oldestFile)
+          
+
 
 ####MAIN####
 ####Create Directorys#####
