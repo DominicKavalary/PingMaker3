@@ -75,9 +75,10 @@ def getPingInfo(Address):
     errWrite(Address,"Unknown error for: "+Address+" at "+timeOfPing)
     time.sleep(60)
     return ["na","na","na"]
+    
 ##Fast regex test for address validation###
 def testTargetRegex(Address):
-  regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+  regex = '^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$'
   if re.search(regex, Address):
     return True
   else:
