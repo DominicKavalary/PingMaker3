@@ -137,6 +137,8 @@ with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
       ListofTargets.append(line.replace("\n",""))
 # for every target in the list you just made, test them to see if they are valid targets, if so make their target directories. this is where their csv files will be stored.
 print("--------------------for target in list subprocess make directories---------------------------------------")
+
+listofBAD = []
 for target in ListofTargets:
   print("-----------------tsrget is "+ target.replace("\n",""))
   if testTargetRegex(target):
@@ -145,9 +147,10 @@ for target in ListofTargets:
     proc.wait()
   else:
     print("-------------DIDNT FUCXKING WORK: "+target)
-    ListofTargets.remove(target)
-    print(ListofTargets)
+    listofBAD.append(target)
   time.sleep(1)
+for target in listofBAD:
+  ListofTargets.remove(target)
 # now for every target in your list, append the csv header info to the file
 for target in ListofTargets:
   with open("/home/PingMaker/csv/"+target+"/"+target+".csv", "w+") as statfilecsv:
