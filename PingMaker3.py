@@ -37,18 +37,12 @@ def getOutput(Command):
 # write a function where ti testrs if its an error or not then if it is do add it if it isnt dont add it to targets#
 def testTargetDeep(Address,timeOfPing,output):
 #look for info in the output
-  lossFound = False
-  bytesFound = False
   errMessageFound = False
   message=""
   for line in output:
-    if "Temporary failure in name resolution" in line or "Name or service not known" in line or "Destination Host Unreachable" in line or "Network is unreachable" in line:
-      errMessageFound = True
+    if "Temporary failure in name resolution" in line or "Name or service not known" in line or "Network is unreachable" in line:
       message = line.replace("\n","")
-  if not lossFound or not bytesFound:
-    errWrite(Address,"Deep Ping test failed at "+timeOfPing+", no Packet Loss found or no Bytes returned: ")
-  if errMessageFound:
-    errWrite(Address,"Deep Ping test failed at "+timeOfPing+", error message given: "+message)
+      errWrite(Address,"Deep Ping test failed at "+timeOfPing+", error message given: "+message)
   else:
     errWrite(Address, "Unknown fail at "+timeOfPing+",: ")
 
