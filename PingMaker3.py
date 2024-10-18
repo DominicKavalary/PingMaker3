@@ -35,10 +35,8 @@ def getOutput(Command):
   return output
 
 # write a function where ti testrs if its an error or not then if it is do add it if it isnt dont add it to targets#
-def testTargetDeep(Address):
+def testTargetDeep(Address,timeOfPing,output):
 #look for info in the output
-  command = "ping -c 1 " + Address
-  output = getOutput(command)
   lossFound = False
   bytesFound = False
   errMessageFound = False
@@ -52,17 +50,11 @@ def testTargetDeep(Address):
         errMessageFound = True
         message = line.replace("\n","")
   if not lossFound or not bytesFound:
-    errWrite(Address,"Deep Ping test failed, no Packet Loss found or no Bytes returned: ")
-    return False
-  elif errMessageFound:
-    errWrite(Address,"Deep Ping test failed, error message given: "+message+"")
-    return False
-  elif lossFound and bytesFound:
-    return True
+    errWrite(Address,"Deep Ping test failed at"+timeOfPing+", no Packet Loss found or no Bytes returned: ")
+      if errMessageFound:
+        errWrite(Address,"Deep Ping test failed at"+timeOfPing+", error message given: "+message+"")
   else:
-    errWrite(Address, "Unknown for: ")
-  print("the fuck "+Address)
-  return False
+    errWrite(Address, "Unknown fail at"+timeOfPing+",: ")
 
 # function to ping and return results to an array#
 def getPingInfo(Address):
@@ -86,13 +78,8 @@ def getPingInfo(Address):
       responseTime = line[line.find("time"):]
   if lossFound:
     return [timeOfPing,packetLoss,responseTime]
-  elif testTargetDeep(Address) == False:
-# if the input isnt found, add the address to the error file. Try and find a way of killing the processes instead. such as, when you first make the process can you create a processname, then search for that process name and kill it
-    time.sleep(60)
-    return ["na","na","na"]
   else:
-    errWrite(Address,"Unknown error for: "+Address+" at "+timeOfPing)
-    time.sleep(60)
+    testTargetDeep(Address,timeOfPing,output)
     return ["na","na","na"]
     
 ##Fast regex test for address validation###
