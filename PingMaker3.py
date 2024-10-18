@@ -171,3 +171,4 @@ print("All main processes created")
 
 #####look into interupted code, maybe add an exit thing that will look in all target directories, then rename the temp file to tempfile_interupted or something similar.
 ###find out why message errors arent populatinmg the errfile
+dont do the wait after making directories, do a sleep for 2 seconds after the last call
