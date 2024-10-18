@@ -78,7 +78,7 @@ def getPingInfo(Address):
     return [timeOfPing,packetLoss,responseTime]
   else:
     testTargetDeep(Address,timeOfPing,output)
-    return ["na","na","na"]
+    return ["err","err","err"]
     
 ##Fast regex test for address validation###
 def testTargetRegex(Address):
@@ -92,21 +92,28 @@ def testTargetRegex(Address):
     else:
       errWrite(Address,"Regex test failed for: ")
       return False
+
 #Ping and write sub thread for rapid pings even on failures#
-def SubPingandWrite(Address,TmpName):
+def SubPingandWrite(Address,TmpName,event):
   pingArray = getPingInfo(Address)
+  if pingArray == ["err","err","err"]:
+    event.set()
+    errWrite(Address,"Process closed upon detection of error for: ")
 # open the target's directory and append to its data file
   with open(TmpName, "a") as tmp:
     tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
 
 #Ping and write thread function#
 def MainPingandWrite(Address):
-  print("thread for "+Address+" Started")    
+  print("thread for "+Address+" Started")
+  #event created#
+  event = threading.Event()
+  ##unknown i works##
   timeOfStart = time.time()
   tempFileName = "/home/PingMaker/csv/"+Address+"/"+Address+".csv"
-  while 1 == 1:
+  while True:
 # get ping response and store in array
-    SubPingThread = threading.Thread(target=SubPingandWrite, args=(Address,tempFileName,))
+    SubPingThread = threading.Thread(target=SubPingandWrite, args=(Address,tempFileName,event))
     SubPingThread.start()
     time.sleep(1)
 # if it has been 6 hours since the file has been rotated, take the current temp file and change its name so you can start making a new temp file
@@ -123,6 +130,8 @@ def MainPingandWrite(Address):
         subprocess.Popen("rm -f /home/PingMaker/csv/"+Address+"/"+oldestFile, shell=True, stdout=subprocess.PIPE)
         with open("/home/PingMaker/csv/"+Address+"/"+"rotatedlogs.txt", "a+") as logfile:
           logfile.write("\n"+oldestFile)
+    if event.is_set():
+      break
           
 ####MAIN####
 ####Create Directorys#####
