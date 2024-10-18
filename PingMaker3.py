@@ -132,7 +132,7 @@ time.sleep(1)
 
 # grab a list of targets from the target file
 ListofTargets = []
-with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
+with open("/home/PingMaker/PingTargets.txt", "r") as targetFile:
   for line in targetFile:
 # check if there is an address range deliniated by cidr notation, if so, then get all available addresses and add them individually to list of targets
     if "/" in line:
