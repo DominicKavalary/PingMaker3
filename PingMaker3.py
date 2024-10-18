@@ -138,7 +138,7 @@ for target in ListofTargets:
     subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
   else:
     ListofTargets.remove(target)
-time.sleep(1)
+  time.sleep(1)
 # now for every target in your list, append the csv header info to the file
 for target in ListofTargets:
   with open("/home/PingMaker/csv/"+target+"/"+target+".csv", "w+") as statfilecsv:
