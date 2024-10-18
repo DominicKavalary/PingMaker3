@@ -78,7 +78,7 @@ def getPingInfo(Address):
     
 ##Fast regex test for address validation###
 def testTargetRegex(Address):
-  regex = '^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$'
+  regex = r"^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
   if re.search(regex, Address):
     return True
   else:
@@ -135,7 +135,7 @@ for target in ListofTargets:
 time.sleep(1)
 # now for every target in your list, append the csv header info to the file
 for target in ListofTargets:
-  with open("/home/PingMaker/csv/"+target+"/"+target+".csv", "a+") as statfilecsv:
+  with open("/home/PingMaker/csv/"+target+"/"+target+".csv", "w+") as statfilecsv:
     statfilecsv.write("timeofPing,packetLoss,responseTime")
     
 ####multithres ping targets and wirte to file###
