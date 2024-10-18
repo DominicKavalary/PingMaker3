@@ -42,17 +42,17 @@ def testTargetDeep(Address,timeOfPing,output):
   errMessageFound = False
   message=""
   for line in output:
-      if "% packet loss" in line:
-        lossFound = True
-      elif "bytes from" in line:
-        bytesFound = True
-      elif "" in line:
-        errMessageFound = True
-        message = line.replace("\n","")
+    if "% packet loss" in line:
+      lossFound = True
+    elif "bytes from" in line:
+      bytesFound = True
+    if "Temporary failure in name resolution" in line or "Name or service not known" in line or "Destination Host Unreachable" in line or "Network is unreachable" in line:
+      errMessageFound = True
+      message = line.replace("\n","")
   if not lossFound or not bytesFound:
     errWrite(Address,"Deep Ping test failed at "+timeOfPing+", no Packet Loss found or no Bytes returned: ")
-    if errMessageFound:
-      errWrite(Address,"Deep Ping test failed at "+timeOfPing+", error message given: "+message)
+  if errMessageFound:
+    errWrite(Address,"Deep Ping test failed at "+timeOfPing+", error message given: "+message)
   else:
     errWrite(Address, "Unknown fail at "+timeOfPing+",: ")
 
@@ -70,10 +70,12 @@ def getPingInfo(Address):
       lossFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
       if bytesFound == False:
-        responseTime = "NA"
+        reponseTime = "NA"
+        if "errors" in line:
+          testTargetDeep(Address,timeOfPing,output)
     elif "bytes from" in line:
       bytesFound = True
-      responseTime = line[line.find("time"):]
+      responseTime = line[line.find("time")+6:]
   if lossFound:
     return [timeOfPing,packetLoss,responseTime]
   else:
