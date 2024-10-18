@@ -116,8 +116,10 @@ time.sleep(1)
 
 # grab a list of targets from the target file
 ListofTargets = []
+print("-----------------Grabbing list of targets------------------------")
 with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
   for line in targetFile:
+    print("-----------------line is "+line.replace("\n",""))
 # check if there is an address range deliniated by cidr notation, if so, then get all available addresses and add them individually to list of targets
     if "/" in line:
       usableSubnet = [str(ip) for ip in ipaddress.IPv4Network(line.replace("\n",""))]
@@ -125,10 +127,14 @@ with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
         ListofTargets.append(str(ip))
     else:
 # if there is no address range, add it as a singular host
+      print("-----------------single host is "+line.replace("\n","")))
       ListofTargets.append(line.replace("\n",""))
 # for every target in the list you just made, test them to see if they are valid targets, if so make their target directories. this is where their csv files will be stored.
+print("--------------------for target in list subprocess make directories---------------------------------------")
 for target in ListofTargets:
+  print("-----------------tsrget is " target.replace("\n",""))
   if testTargetRegex(target):
+    print("-------------TRUE REGEX: "+target)
     subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
   else:
     ListofTargets.remove(target)
