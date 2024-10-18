@@ -51,8 +51,8 @@ def testTargetDeep(Address):
       elif "" in line:
         errMessageFound = True
         message = line.replace("\n","")
-  if lossFound && not bytesFound:
-    errWrite(Address,"Deep Ping test failed, Packet Loss but no Bytes returned: ")
+  if not lossFound || not bytesFound:
+    errWrite(Address,"Deep Ping test failed, no Packet Loss found or no Bytes returned: ")
     return False
   elif errMessageFound:
     errWrite(Address,"Deep Ping test failed, error message given: "+message+"")
