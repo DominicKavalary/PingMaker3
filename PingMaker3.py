@@ -57,12 +57,16 @@ def testTargetDeep(Address):
   elif errMessageFound:
     errWrite(Address,"Deep Ping test failed, error message given: "+message+"")
     return False
+  elif lossFound and bytesFound:
+    return True
   else:
     errWrite(Address, "Unknown for: ")
+  print("the fuck "+Address)
   return False
 
 # function to ping and return results to an array#
 def getPingInfo(Address):
+  print("getting ping for "+Address)    
   timeOfPing = time.strftime("%D:%H:%M:%S")
   command = "ping -c 1 " + Address
   packetLoss = 0
@@ -72,6 +76,7 @@ def getPingInfo(Address):
   lossFound = False
   bytesFound = False
   for line in output:
+    print(line)
     if "% packet loss" in line:
       lossFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
@@ -104,6 +109,7 @@ def testTargetRegex(Address):
   
 #Ping and write thread function#
 def PingandWrite(Address):
+  print("thread for "+Address+" Started")    
   timeOfStart = time.time()
   tempFileName = "/home/PingMaker/csv/"+Address+"/"+Address+".csv"
   while 1 == 1:
@@ -154,12 +160,12 @@ for target in listofBAD:
 for target in ListofTargets:
   with open("/home/PingMaker/csv/"+target+"/"+target+".csv", "w+") as statfilecsv:
     statfilecsv.write("timeofPing,packetLoss,responseTime")
-    
+print("All files created")    
 ####multithres ping targets and wirte to file###
 # for every address in your list of targets, start their own ping and write subprocess for them to run
 for Address in ListofTargets:
   PingThread = threading.Thread(target=PingandWrite, args=(Address,))
   PingThread.start()
-
+print("All processes created")  
 
 #####look into interupted code, maybe add an exit thing that will look in all target directories, then rename the temp file to tempfile_interupted or something similar.
