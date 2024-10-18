@@ -50,11 +50,11 @@ def testTargetDeep(Address,timeOfPing,output):
         errMessageFound = True
         message = line.replace("\n","")
   if not lossFound or not bytesFound:
-    errWrite(Address,"Deep Ping test failed at"+timeOfPing+", no Packet Loss found or no Bytes returned: ")
+    errWrite(Address,"Deep Ping test failed at "+timeOfPing+", no Packet Loss found or no Bytes returned: ")
     if errMessageFound:
-      errWrite(Address,"Deep Ping test failed at"+timeOfPing+", error message given: "+message+"")
+      errWrite(Address,"Deep Ping test failed at "+timeOfPing+", error message given: "+message)
   else:
-    errWrite(Address, "Unknown fail at"+timeOfPing+",: ")
+    errWrite(Address, "Unknown fail at "+timeOfPing+",: ")
 
 # function to ping and return results to an array#
 def getPingInfo(Address):
@@ -113,7 +113,7 @@ def MainPingandWrite(Address):
   tempFileName = "/home/PingMaker/csv/"+Address+"/"+Address+".csv"
   while True:
 # get ping response and store in array
-    SubPingThread = threading.Thread(target=SubPingandWrite, args=(Address,tempFileName,event))
+    SubPingThread = threading.Thread(target=SubPingandWrite, args=(Address,tempFileName,event,))
     SubPingThread.start()
     time.sleep(1)
 # if it has been 6 hours since the file has been rotated, take the current temp file and change its name so you can start making a new temp file
