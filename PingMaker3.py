@@ -69,7 +69,7 @@ def getPingInfo(Address):
   print("getting ping for "+Address)    
   timeOfPing = time.strftime("%D:%H:%M:%S")
   command = "ping -c 1 " + Address
-  packetLoss = 0
+  packetLoss = ""
   responseTime = ""
   output = getOutput(command)
   time.sleep(1)
@@ -80,10 +80,12 @@ def getPingInfo(Address):
     if "% packet loss" in line:
       lossFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
+      if bytesFound == False:
+        responseTime = line.split(', ')[3].split(" ")[1]
     elif "bytes from" in line:
       bytesFound = True
       responseTime = line[line.find("time"):]
-  if lossFound and bytesFound:
+  if lossFound:
     return [timeOfPing,packetLoss,responseTime]
   elif testTargetDeep(Address) == False:
 # if the input isnt found, add the address to the error file. Try and find a way of killing the processes instead. such as, when you first make the process can you create a processname, then search for that process name and kill it
