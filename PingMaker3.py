@@ -58,7 +58,6 @@ def testTargetDeep(Address,timeOfPing,output):
 
 # function to ping and return results to an array#
 def getPingInfo(Address):
-  print("getting ping for "+Address)    
   timeOfPing = time.strftime("%D:%H:%M:%S")
   command = "ping -c 1 " + Address
   packetLoss = ""
@@ -67,7 +66,6 @@ def getPingInfo(Address):
   lossFound = False
   bytesFound = False
   for line in output:
-    print(line)
     if "% packet loss" in line:
       lossFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
