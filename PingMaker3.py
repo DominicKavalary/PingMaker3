@@ -39,15 +39,27 @@ def testTargetDeep(Address):
 #look for info in the output
   command = "ping -c 1 " + Address
   output = getOutput(command)
-  infoFound = False
+  lossFound = False
+  bytesFound = False
+  errMessageFound = False
+  message=""
   for line in output:
       if "% packet loss" in line:
-        infoFound = True
+        lossFound = True
       elif "bytes from" in line:
-        infoFound = True
-  if infoFound == False:
-    errWrite(Address,"Deep Ping test failed for: ")
-  return infoFound
+        bytesFound = True
+      elif "" in line:
+        errMessageFound = True
+        message = line.replace("\n","")
+  if lossFound && not bytesFound:
+    errWrite(Address,"Deep Ping test failed, Packet Loss but no Bytes returned: ")
+    return False
+  elif errMessageFound:
+    errWrite(Address,"Deep Ping test failed, error message given: "+message+"")
+    return False
+  else:
+    errWrite(Address, "Unknown for: ")
+  return False
 
 # function to ping and return results to an array#
 def getPingInfo(Address):
@@ -57,15 +69,16 @@ def getPingInfo(Address):
   responseTime = ""
   output = getOutput(command)
   time.sleep(1)
-  infoFound = False
+  lossFound = False
+  bytesFound = False
   for line in output:
     if "% packet loss" in line:
-      infoFound = True
+      lossFound = True
       packetLoss = line.split(', ')[2].split(" ")[0]
     elif "bytes from" in line:
-      infoFound = True
+      bytesFound = True
       responseTime = line[line.find("time"):]
-  if infoFound == True:
+  if lossFound && bytesFound:
     return [timeOfPing,packetLoss,responseTime]
   elif testTargetDeep(Address) == False:
 # if the input isnt found, add the address to the error file. Try and find a way of killing the processes instead. such as, when you first make the process can you create a processname, then search for that process name and kill it
