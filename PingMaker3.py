@@ -5,8 +5,27 @@ import threading
 import subprocess
 import ipaddress
 import re
+import random
 
 ##Functions###
+#Write to error file#
+#########################THIS MIGHT BE ALMOST COMPLETELY UNNECESARY#############
+def errWrite(Address, Message):
+  errorWrote = False
+  for i in range(10):
+    if errorWrote == False:
+      try:
+        with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
+          errfile.write("\n"+Message+Address)
+          errorWrote = True
+      except:
+          time.sleep(random.randint(1, 15))
+    else:
+      break
+  if errorWrote == False:
+    with open("/home/PingMaker/errors/Unknown.txt", "a") as errfile:
+      errfile.write("\n"+"Failure to write error for: "+Address)
+
 #subprocess outputgrab function#
 def getOutput(Command):
   temp = subprocess.Popen(Command, shell=True, stdout=subprocess.PIPE)
@@ -14,6 +33,21 @@ def getOutput(Command):
   output = output.decode("utf-8")
   output = output.splitlines()
   return output
+
+# write a function where ti testrs if its an error or not then if it is do add it if it isnt dont add it to targets#
+def testTargetDeep(Address):
+#look for info in the output
+  command = "ping -c 1 " + Address
+  output = getOutput(command)
+  infoFound = False
+  for line in output:
+      if "% packet loss" in line:
+        infoFound = True
+      elif "bytes from" in line:
+        infoFound = True
+  if infoFound == False:
+    errWrite(Address,"Deep Ping test failed for: ")
+  return infoFound
 
 # function to ping and return results to an array#
 def getPingInfo(Address):
@@ -35,30 +69,13 @@ def getPingInfo(Address):
     return [timeOfPing,packetLoss,responseTime]
   elif testTargetDeep(Address) == False:
 # if the input isnt found, add the address to the error file. Try and find a way of killing the processes instead. such as, when you first make the process can you create a processname, then search for that process name and kill it
-    with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
-      errfile.write("\nDeep ping test failed for: "+Address+" at "+timeOfPing+", check format of address")
     time.sleep(60)
     return ["na","na","na"]
   else:
-    with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
-      errfile.write("\nUnknown error for: "+Address+" at "+timeOfPing)
+    errWrite(Address,"Unknown error for: "+Address+" at "+timeOfPing)
     time.sleep(60)
     return ["na","na","na"]
-  
-# write a function where ti testrs if its an error or not then if it is do add it if it isnt dont add it to targets#
-def testTargetDeep(Address):
-#look for info in the output
-  command = "ping -c 1 " + Address
-  output = getOutput(command)
-  infoFound = False
-  for line in output:
-      if "% packet loss" in line:
-        infoFound = True
-      elif "bytes from" in line:
-        infoFound = True
-  # regardless, return the value of infoFound so the code knows what to do
-  return infoFound
-
+##Fast regex test for address validation###
 def testTargetRegex(Address):
   regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
   if re.search(regex, Address):
@@ -68,9 +85,8 @@ def testTargetRegex(Address):
     if re.search(regex,Address):
       return True
     else:
-      with open("/home/PingMaker/errors/errlist.txt", "a") as errfile:
-        errfile.write("\nRegex test failed for: "+Address+", check format of address")
-      False
+      errWrite(Address,"Regex test failed for: ")
+      return False
   
 #Ping and write thread function#
 def PingandWrite(Address):
@@ -90,8 +106,6 @@ def PingandWrite(Address):
 # now make a new temp file
         with open(tempFileName, "a+") as tmpNew:
           tmpNew.write("timeofPing,packetLoss,responseTime")
-# if no info was found, create an error file. then mark the errorFileNotCreated to False so that it doesnt keep writing to the file every time. Once again, make a function to test all addresses beforehand, and for the ones that fail add their addresses to a single text file with the name including the timestamp of when the error checking happened
-
 
 ####MAIN####
 ####Create Directorys#####
@@ -117,7 +131,7 @@ for target in ListofTargets:
     subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
   else:
     ListofTargets.remove(target)
-time.sleep(2)
+time.sleep(1)
 # now for every target in your list, append the csv header info to the file
 for target in ListofTargets:
   with open("/home/PingMaker/csv/"+target+"/"+target+".csv", "a+") as statfilecsv:
