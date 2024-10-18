@@ -72,7 +72,6 @@ def getPingInfo(Address):
   packetLoss = ""
   responseTime = ""
   output = getOutput(command)
-  time.sleep(1)
   lossFound = False
   bytesFound = False
   for line in output:
@@ -117,6 +116,8 @@ def PingandWrite(Address):
   while 1 == 1:
 # get ping response and store in array
     pingArray = getPingInfo(Address)
+    if "na" not in pingArray:
+      time.sleep(1)
 # open the target's directory and append to its data file
     with open(tempFileName, "a") as tmp:
       tmp.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2])
