@@ -123,7 +123,7 @@ def MainPingandWrite(Address):
       if count > 6:
         oldestFile = getOutput("ls -lt /home/PingMaker/csv/"+Address+" | tail -1")
         oldestFile = oldestFile.split(" ")[8]
-        subprocess.Popen("rm -f /home/PingMaker/csv/"+oldestFile, shell=True, stdout=subprocess.PIPE)
+        subprocess.Popen("rm -f /home/PingMaker/csv/"+Address+"/"+oldestFile, shell=True, stdout=subprocess.PIPE)
         with open("rotatedlogs.txt", "a+") as logfile:
         logfile.write("\n"+oldestFile)
           
