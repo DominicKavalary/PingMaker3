@@ -115,19 +115,15 @@ def MainPingandWrite(Address):
       subprocess.Popen("mv "+tempFileName+" /home/PingMaker/csv/"+Address+"/"+newFileName, shell=True, stdout=subprocess.PIPE)
       timeOfStart = time.time()
 # now make a new temp file
-      ###################NONE OF TRHE BLEOW WORKS
       with open(tempFileName, "a+") as tmpNew:
         tmpNew.write("timeofPing,packetLoss,responseTime")
       count = int(getOutput("ls /home/PingMaker/csv/"+Address+" | wc -l")[0])
       if count > 6:
-        oldestFile = getOutput("ls -lt /home/PingMaker/csv/"+Address+" | tail -1")[0]
-        oldestFile = oldestFile.split(" ")[8]
+        oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Address+" | tail -1")[0]
         subprocess.Popen("rm -f /home/PingMaker/csv/"+Address+"/"+oldestFile, shell=True, stdout=subprocess.PIPE)
-        with open("rotatedlogs.txt", "a+") as logfile:
+        with open("/home/PingMaker/csv/"+Address+"/"+"rotatedlogs.txt", "a+") as logfile:
           logfile.write("\n"+oldestFile)
           
-############THIS DOESNT WORK^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 ####MAIN####
 ####Create Directorys#####
 subprocess.Popen("mkdir /home/PingMaker/csv", shell=True, stdout=subprocess.PIPE)
