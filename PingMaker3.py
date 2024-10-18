@@ -132,7 +132,7 @@ with open("/home/PingMaker/PingMakerTargets.txt", "r") as targetFile:
 # for every target in the list you just made, test them to see if they are valid targets, if so make their target directories. this is where their csv files will be stored.
 print("--------------------for target in list subprocess make directories---------------------------------------")
 for target in ListofTargets:
-  print("-----------------tsrget is " target.replace("\n",""))
+  print("-----------------tsrget is "+ target.replace("\n",""))
   if testTargetRegex(target):
     print("-------------TRUE REGEX: "+target)
     subprocess.Popen("mkdir /home/PingMaker/csv/"+target, shell=True, stdout=subprocess.PIPE)
