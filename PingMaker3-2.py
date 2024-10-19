@@ -16,9 +16,9 @@ def getOutput(Command):
   return output
 
 ### Function to write errors to our error file ### LEAVE OUT THE BITS FOR RANDOM RETRYING FOR NOW AND WELL SEE HOW IT GOES
-def errWrite(Message, Address):
+def errWrite(Message):
   with open("/home/PingMaker/errors/Errors.txt", "a") as errfile:
-    errfile.write("\n"+Message+Address)
+    errfile.write("\n"+Message)
 
 #### Function to do a quick address format validation on the targets in the target file. X.X.X.X and XXX.XXX(sorta) for ips and hostnames###
 def testTargetRegex(Target):
@@ -30,7 +30,7 @@ def testTargetRegex(Target):
     if re.search(regex,Target):
       return True
     else:
-      errWrite("Regex test failed for: ",Target)
+      errWrite("Regex test failed for: " + Target)
       return False
       
 ###Function to create our temporary log file. It will start a subprocess and wait till the process is done
@@ -80,33 +80,48 @@ def getPingArray(Target):
   timeOfPing = time.strftime("%D:%H:%M:%S")
   packetLoss = "NA"
   responseTime = "NA"
-  notes= "NA"
+  errorNote= "NA"
   output = getOutput("ping -c 1 " + Target)
-  #parsing through results of ping to grab data
+  #parsing through results of ping to grab data. It will grab packet loss, response time, and any error it finds. It will then return the output
   for line in output:
     if "% packet loss" in line and "errors" not in line:
       packetLoss = line.split(', ')[2].split(" ")[0]
-      if bytesFound == False:
-        responseTime = "NA"
     elif "errors" in line:
       packetLoss = line.split(', ')[3].split(" ")[0]
-      for line2 in output:
-        if "Host Unreachable" in line:
-          notes = "Destination Host Unreachable"     ###where im leaving off###
+    elif "Host Unreachable" in line or "Temporary failure" in line or "Name or service" in line or "Network is unreachable" in line:
+      errorNote = line
     elif "bytes from" in line:
-      bytesFound = True
-      responseTime = line[line.find("time")+6:]
+      responseTime = line[line.find("time=")+7:]
+  return [timeOfPing,packetLoss,responseTime,errorNote]
+  
 ### Function to be threaded. This function handles the main process of pinging and storing file data
 def PingMaker(Target):
-  # Get start an event. This event can be shared with functions, and if this event is tripped, this function will end to save resources. This will be used in the case of error handling, where it is clear pinging is a waste of reosurces.
-  event = threading.Event()
+  # make a boolean that will allow the program to run, if it errors too much and the boolean trips, end the process by breaking the loop
+  lowErrors = True
   # grab the starting time of the function. This will be used to keep track of how long the function is running so we can do a time based log rotation
   timeOfStart = time.time()
   # we will set up a file name to be used by other code when appending to the file so I dont have to write the whole path over and over again#
   tempFileName = "/home/PingMaker/csv/"+Target+"/"+Target+".csv"
+  # Error Count, this is to count total errors, if total errors of a certain kind happen often, it will close the thread because it will nto ever succede
+  errorCount = 0
   # Setting up the while statement to always run and continuously try pinging, otherwise if the event happens it will break the loop#
-  while True:
-    # Grab the info from a the ping output function, and then check the time of how long the code has ran for
+  while lowErrors:
+    # Grab the info from a the ping output function
+    pingArray = getPingArray(Target)
+    # Write the data to the target file
+    with open(tempFileName, "a") as tempFile:
+      tempFile.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2]+","+pingArray[3])
+    # if there was an error note created, add to the count. 
+    if "NA" not in pingArray[3]:
+      errorCount += 1
+      if errorCount >= 750:
+        errWrite("Target thread closed due excessive errors for: " + Target)
+        lowErrors = False
+    #if no error created, tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, so this will limit the pings to about one every one or two seconds. 
+    else:
+      time.sleep(1)
+      # now, 
+        
     
 ########    ----   MAIN     ----    ####### MAYBE DO THE IF MAIN THING
 
