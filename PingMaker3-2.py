@@ -64,11 +64,11 @@ def makeTempFile(Target):
   with open("/home/PingMaker/csv/"+Target+"/"+Target+".csv", "a") as TargetCSVFile:
     TargetCSVFile.write("timeofPing,packetLoss,responseTime,note")
 
-### Function to create needed directories for code to work
+### Function to create needed directories and error file for code to work
 def makeDirectories():
   subprocess.run(["mkdir", "/home/PingMaker/csv"])
   subprocess.run(["mkdir", "/home/PingMaker/errors"])
-  subprocess.run(["mkdir", "/home/PingMaker/errors/Errors.txt"])
+  subprocess.run(["touch", "/home/PingMaker/errors/Errors.txt"])
 
 ### Function to take a list of targets and set up their temp files
 def targetFileSetup(ListOfTargets):
