@@ -104,17 +104,19 @@ def rotateLogs(tempFilePath, Target, timeSinceStart):
   subprocess.run(["mv", tempFilePath, newFilePath])
   makeTempFile(Target)
   # if there are more than 6 logs (24 hours worth), remove the oldest (last modified) file
-  fileCount = int(getOutput("ls /home/PingMaker/csv/"+Address+" | wc -l")[0])
+  fileCount = int(getOutput("ls /home/PingMaker/csv/"+Target+" | wc -l")[0])
   if count > 6:
-    oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Address+" | tail -1")[0]
-    subprocess.run(["rm", "-f", "/home/PingMaker/csv/"+Address+"/"+oldestFile])
+    oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Target+" | tail -1")[0]
+    subprocess.run(["rm", "-f", "/home/PingMaker/csv/"+Target+"/"+oldestFile])
 
-def fixInterrupted(tempFilePath,timeSinceStart)
+### Function to fix erred out targets
+def fixInterrupted(tempFilePath, Target, timeSinceStart)
   timeNow = time.strftime("%D:%H:%M")
   timeNow = str(timeNow.replace("/","_").replace(":","-"))
   timeSinceStart = str(timeSinceStart.replace("/","_").replace(":","-"))
   newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeSinceStart+"____"+timeNow+"_ERRORED.csv"
   subprocess.run(["mv", tempFilePath, newFilePath])
+
 ### Function to be threaded. This function handles the main process of pinging and storing file data
 def PingMaker(Target):
   # make a boolean that will allow the program to run, if it errors too much and the boolean trips, end the process by breaking the loop
@@ -140,7 +142,7 @@ def PingMaker(Target):
         errWrite("Target thread closed due excessive errors for: " + Target)
         lowErrors = False
         #fix the name of the file so you know the timestamp
-        fixInterrupted(tempFilePath,timeSinceStart)
+        fixInterrupted(tempFilePath, Target, timeSinceStart)
     #if no error created, tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, so this will limit the pings to about one every one or two seconds. 
     else:
       time.sleep(1)
