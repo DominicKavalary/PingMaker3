@@ -50,7 +50,7 @@ def getTargets():
   ListOfBadTargets = []
   for Target in ListOfTargets:
     # if they pass the initial tests, create their directories
-    if not testTargetRegex(target):
+    if not testTargetRegex(Target):
       ListOfBadTargets.append(Target)
   # now remove every bad target from our list
   for Target in ListOfBadTargets:
@@ -59,16 +59,20 @@ def getTargets():
   return ListOfTargets
   
 ### Function to make temp file and fill with basic cheader contents#
-def makeTempFile(Target) 
+def makeTempFile(Target):
   subprocess.run(["touch", "/home/PingMaker/csv/"+Target+"/"+Target+".csv"])
   with open("/home/PingMaker/csv/"+Target+"/"+Target+".csv", "a") as TargetCSVFile:
     TargetCSVFile.write("timeofPing,packetLoss,responseTime,note")
 
-### Function to take a list of targets and set up every file you would need for them
-def targetFileSetup(ListOfTargets):
-  # make directories if they are not already created
+### Function to create needed directories for code to work
+makeDirectories():
   subprocess.run(["mkdir", "/home/PingMaker/csv"])
   subprocess.run(["mkdir", "/home/PingMaker/errors"])
+  subprocess.run(["mkdir", "/home/PingMaker/errors/Errors.txt"])
+
+### Function to take a list of targets and set up their temp files
+def targetFileSetup(ListOfTargets):
+  # make directories if they are not already created, then add the file to those directories
   for Target in ListOfTargets:
     subprocess.run(["mkdir", "/home/PingMaker/csv/"+Target])
     makeTempFile(Target)
@@ -110,7 +114,7 @@ def rotateLogs(tempFilePath, Target, timeSinceStart):
     subprocess.run(["rm", "-f", "/home/PingMaker/csv/"+Target+"/"+oldestFile])
 
 ### Function to fix erred out targets
-def fixInterrupted(tempFilePath, Target, timeSinceStart)
+def fixInterrupted(tempFilePath, Target, timeSinceStart):
   timeNow = time.strftime("%D:%H:%M")
   timeNow = str(timeNow.replace("/","_").replace(":","-"))
   timeSinceStart = str(timeSinceStart.replace("/","_").replace(":","-"))
@@ -151,8 +155,9 @@ def PingMaker(Target):
       rotateLogs(tempFilePath, Target, timeSinceStart)
       timeOfStart = time.time()
 
-########    ----   MAIN     ----    ####### MAYBE DO THE IF MAIN THING
-
+########    ----   MAIN     ----    ####### MAYBE DO THE IF MAIN THING#
+# sets up needed directories
+makeDirectories()
 # Get list of targets Make a directory and a csv file for every target in that list. then, add the header info to it
 ListOfTargets = getTargets()
 targetFileSetup(ListOfTargets)
