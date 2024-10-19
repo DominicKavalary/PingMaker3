@@ -107,7 +107,7 @@ def rotateLogs(tempFilePath, Target, timeSinceStart):
   makeTempFile(Target)
   # if there are more than 6 logs (24 hours worth), remove the oldest (last modified) file
   fileCount = int(getOutput("ls /home/PingMaker/csv/"+Target+" | wc -l")[0])
-  if count > 6:
+  if fileCount > 6:
     oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Target+" | tail -1")[0]
     subprocess.run(["rm", "-f", "/home/PingMaker/csv/"+Target+"/"+oldestFile])
 
