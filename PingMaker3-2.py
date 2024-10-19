@@ -32,10 +32,6 @@ def testTargetRegex(Target):
     else:
       errWrite("Regex test failed for: " + Target)
       return False
-      
-###Function to create our temporary log file. It will start a subprocess and wait till the process is done
-#def makeTempFile(Target):
-#  proc = subprocess.run(["mkdir", "/home/PingMaker/csv/"+Target)
   
 ### Function to get targets from target file. then parse through them and remove bad ones
 def getTargets():
@@ -62,6 +58,12 @@ def getTargets():
     ListOfTargets.remove(Target)
   ## Return the list of targets
   return ListOfTargets
+  
+### Function to make temp file and fill with basic cheader contents#
+def makeTempFile(Target) 
+  subprocess.run(["touch", "/home/PingMaker/csv/"+Target+"/"+Target+".csv"])
+  with open("/home/PingMaker/csv/"+Target+"/"+Target+".csv", "a") as TargetCSVFile:
+    TargetCSVFile.write("timeofPing,packetLoss,responseTime,note")
 
 ### Function to take a list of targets and set up every file you would need for them
 def targetFileSetup(ListOfTargets):
@@ -70,9 +72,7 @@ def targetFileSetup(ListOfTargets):
   subprocess.run(["mkdir", "/home/PingMaker/errors"])
   for Target in ListOfTargets:
     subprocess.run(["mkdir", "/home/PingMaker/csv/"+Target])
-    subprocess.run(["touch", "/home/PingMaker/csv/"+Target+"/"+Target+".csv"])
-    with open("/home/PingMaker/csv/"+Target+"/"+Target+".csv", "a") as TargetCSVFile:
-      TargetCSVFile.write("timeofPing,packetLoss,responseTime,note")
+    makeTempFile(Target)
 
 ### Function to do a ping command, and return the output as an array of values. The array is: the time of ping, the packet loss, the response time, and any note outputted by the command#
 def getPingArray(Target):
@@ -93,15 +93,38 @@ def getPingArray(Target):
     elif "bytes from" in line:
       responseTime = line[line.find("time=")+7:]
   return [timeOfPing,packetLoss,responseTime,errorNote]
-  
+
+### Function to rotate the log files so you dont have excessivly long logs, name the logs the timestamp they logged
+def rotateLogs(tempFilePath, Target, timeSinceStart):
+  # get the times turned to strings to add to the name of file
+  timeNow = time.strftime("%D:%H:%M")
+  timeNow = str(timeNow.replace("/","_").replace(":","-"))
+  timeSinceStart = str(timeSinceStart.replace("/","_").replace(":","-"))
+  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeSinceStart+"____"+timeNow+".csv"
+  # rename the log file, then create a new temp file
+  subprocess.run(["mv", tempFilePath, newFilePath])
+  makeTempFile(Target)
+  # if there are more than 6 logs (24 hours worth), remove the oldest (last modified) file
+  fileCount = int(getOutput("ls /home/PingMaker/csv/"+Address+" | wc -l")[0])
+  if count > 6:
+    oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Address+" | tail -1")[0]
+    subprocess.run(["rm", "-f", "/home/PingMaker/csv/"+Address+"/"+oldestFile])
+
+def fixInterrupted(tempFilePath,timeSinceStart)
+  timeNow = time.strftime("%D:%H:%M")
+  timeNow = str(timeNow.replace("/","_").replace(":","-"))
+  timeSinceStart = str(timeSinceStart.replace("/","_").replace(":","-"))
+  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeSinceStart+"____"+timeNow+"_ERRORED.csv"
+  subprocess.run(["mv", tempFilePath, newFilePath])
 ### Function to be threaded. This function handles the main process of pinging and storing file data
 def PingMaker(Target):
   # make a boolean that will allow the program to run, if it errors too much and the boolean trips, end the process by breaking the loop
   lowErrors = True
-  # grab the starting time of the function. This will be used to keep track of how long the function is running so we can do a time based log rotation
-  timeOfStart = time.time()
+  # grab the starting time of the function in seconds and the time in a diff format . This will be used to keep track of how long the function is running so we can do a time based log rotation
+  referenceStart = time.time()
+  timeSinceStart = time.strftime("%D:%H:%M")
   # we will set up a file name to be used by other code when appending to the file so I dont have to write the whole path over and over again#
-  tempFileName = "/home/PingMaker/csv/"+Target+"/"+Target+".csv"
+  tempFilePath = "/home/PingMaker/csv/"+Target+"/"+Target+".csv"
   # Error Count, this is to count total errors, if total errors of a certain kind happen often, it will close the thread because it will nto ever succede
   errorCount = 0
   # Setting up the while statement to always run and continuously try pinging, otherwise if the event happens it will break the loop#
@@ -109,7 +132,7 @@ def PingMaker(Target):
     # Grab the info from a the ping output function
     pingArray = getPingArray(Target)
     # Write the data to the target file
-    with open(tempFileName, "a") as tempFile:
+    with open(tempFilePath, "a") as tempFile:
       tempFile.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2]+","+pingArray[3])
     # if there was an error note created, add to the count. 
     if "NA" not in pingArray[3]:
@@ -117,12 +140,16 @@ def PingMaker(Target):
       if errorCount >= 750:
         errWrite("Target thread closed due excessive errors for: " + Target)
         lowErrors = False
+        #fix the name of the file so you know the timestamp
+        fixInterrupted(tempFilePath,timeSinceStart)
     #if no error created, tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, so this will limit the pings to about one every one or two seconds. 
     else:
       time.sleep(1)
-      # now, 
-        
-    
+      # now, check the time that the code has ran for, if its been about 4 hours rotate logs#
+    if int((time.time()-referenceStart)/60/60) == 4:
+      rotateLogs(tempFilePath, Target, timeSinceStart)
+      timeOfStart = time.time()
+
 ########    ----   MAIN     ----    ####### MAYBE DO THE IF MAIN THING
 
 # Get list of targets Make a directory and a csv file for every target in that list. then, add the header info to it
