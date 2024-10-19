@@ -8,9 +8,7 @@ import re
 
 #### Function to turn cli output into an array, each line being an item in the array###
 def getOutput(Command):
-  temp = subprocess.Popen(Command, shell=True, stdout=subprocess.PIPE)
-  output,error = temp.communicate()
-  output = output.decode("utf-8")
+  output = subprocess.getoutput(Command)
   output = output.splitlines()
   return output
 
