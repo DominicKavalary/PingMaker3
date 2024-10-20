@@ -1,0 +1,18 @@
+[Unit]
+
+Description=Script that rapidly pings and logs ping results for a list of targets defined by the user
+
+After=network.target
+
+
+[Service]
+
+Type=simple
+
+ExecStart=/usr/bin/python3 /home/PingMaker/PingMaker.py
+
+ExecStopPost=/usr/bin/python3 /home/PingMaker/PingMakerCleanup.py
+
+[Install]
+
+WantedBy=multi-user.target
