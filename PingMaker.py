@@ -97,10 +97,10 @@ def getPingArray(Target):
   return [timeOfPing,packetLoss,responseTime,errorNote]
 
 ### Function to fix erred out targets
-def fixInterrupted(tempFilePath, Target):
+def fixInterrupted(tempFilePath, Target, reasonType):
   timeNow = time.strftime("%D:%H:%M")
   timeNow = str(timeNow.replace("/","_").replace(":","-"))
-  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeNow+"_ERRORED.csv"
+  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeNow+"_"+reasonType+".csv"
   subprocess.run(["mv", tempFilePath, newFilePath])
 
 ### Function to rotate the log files so you dont have excessivly long logs, name the logs the timestamp they logged
@@ -142,7 +142,7 @@ def PingMaker(Target):
       if "Name or service not known" in pingArray[3]:
         errWrite("Name or service not known for target: "+Target+", validate target format\nEnding thread for target "+Target+" under the assumption of an improper target")
         knownService = False
-        fixInterrupted(tempFilePath, Target)
+        fixInterrupted(tempFilePath, Target, "ERRORS")
       if errorCount == 750:
         errWrite("Excessive errors for: " + Target)
         errorCount = 0
