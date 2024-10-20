@@ -112,18 +112,8 @@ def rotateLogs(tempFilePath, Target, timeSinceStart):
     oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Target+" | tail -1")[0]
     subprocess.run(["rm", "-f", "/home/PingMaker/csv/"+Target+"/"+oldestFile])
 
-### Function to fix erred out targets
-def fixInterrupted(tempFilePath, Target, timeSinceStart):
-  timeNow = time.strftime("%D:%H:%M")
-  timeNow = str(timeNow.replace("/","_").replace(":","-"))
-  timeSinceStart = str(timeSinceStart.replace("/","_").replace(":","-"))
-  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeSinceStart+"____"+timeNow+"_ERRORED.csv"
-  subprocess.run(["mv", tempFilePath, newFilePath])
-
 ### Function to be threaded. This function handles the main process of pinging and storing file data
 def PingMaker(Target):
-  # make a boolean that will allow the program to run, if it errors too much and the boolean trips, end the process by breaking the loop
-  lowErrors = True
   # grab the starting time of the function in seconds  This will be used to keep track of how long the function is running so we can do a time based log rotation
   referenceStart = time.time()
   timeSinceStart = time.strftime("%D:%H:%M")
@@ -132,7 +122,7 @@ def PingMaker(Target):
   # Error Count, this is to count total errors, if total errors of a certain kind happen often, it will close the thread because it will nto ever succede
   errorCount = 0
   # Setting up the while statement to always run and continuously try pinging, otherwise if the event happens it will break the loop#
-  while lowErrors:
+  while True:
     # Grab the info from a the ping output function
     pingArray = getPingArray(Target)
     # Write the data to the target file
@@ -141,11 +131,9 @@ def PingMaker(Target):
     # if there was an error note created, add to the count. 
     if "NA" not in pingArray[3]:
       errorCount += 1
-      if errorCount >= 750:
-        errWrite("Target thread closed due excessive errors for: " + Target)
-        lowErrors = False
-        #fix the name of the file so you know the timestamp
-        fixInterrupted(tempFilePath, Target, timeSinceStart)
+      if errorCount == 750:
+        errWrite("Excessive errors for: " + Target + ", check if valid target")
+        errorCount = 0
     #if no error created, tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, so this will limit the pings to about one every one or two seconds. 
     else:
       time.sleep(1)
