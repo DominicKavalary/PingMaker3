@@ -122,21 +122,24 @@ def PingMaker(Target):
   # Error Count, this is to count total errors, if total errors of a certain kind happen often, it will close the thread because it will nto ever succede
   errorCount = 0
   # Setting up the while statement to always run and continuously try pinging, otherwise if the event happens it will break the loop#
-  while True:
+  knownService = True
+  while knownService:
     # Grab the info from a the ping output function
     pingArray = getPingArray(Target)
     # Write the data to the target file
     with open(tempFilePath, "a") as tempFile:
       tempFile.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2]+","+pingArray[3])
-    # if there was an error note created, add to the count. 
+    # if there was an error note created, add to the count. , if a large amount has happened, make a note of it. if the name or service isnt known
     if "NA" not in pingArray[3]:
       errorCount += 1
+      if "Name or service not known" in pingArray[3]:
+        errWrite("Name or service not known for target: "+Target+", validate target format\nEnding thread for target "+Target+" under the assumption of an improper target")
+        knownService = False
       if errorCount == 750:
-        errWrite("Excessive errors for: " + Target + ", check if valid target")
+        errWrite("Excessive errors for: " + Target)
         errorCount = 0
-    #if no error created, tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, so this will limit the pings to about one every one or two seconds. 
-    else:
-      time.sleep(1)
+    #tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, and errors depending on which kind can show up immediatly. so this will limit the pings/errors to about one every one or two seconds. 
+    time.sleep(1)
       # now, check the time that the code has ran for, if its been about 4 hours rotate logs#
     if int((time.time()-referenceStart)/60/60) == 4:
       rotateLogs(tempFilePath, Target, timeSinceStart)
