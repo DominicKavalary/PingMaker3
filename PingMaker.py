@@ -5,6 +5,7 @@ import threading
 import subprocess
 import ipaddress
 import re
+import random
 
 #### Function to turn cli output into an array, each line being an item in the array###
 def getOutput(Command):
@@ -160,9 +161,11 @@ makeDirectories()
 ListOfTargets = getTargets()
 targetFileSetup(ListOfTargets)
 
-# Start a thread per target. Each thread will ping the target and log to their own files.
+# Start a thread per target. Each thread will ping the target and log to their own files. spreads the starting of threads by waiting fractions of a second so that the pings dont all happen liek once like a firing squad and mess up the cpu
 for Target in ListOfTargets:
   PingThread = threading.Thread(target=PingMaker, args=(Target,))
   PingThread.start()
+  time.sleep(random.random()/3)
+  
 
 
