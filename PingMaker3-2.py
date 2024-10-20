@@ -101,7 +101,7 @@ def rotateLogs(tempFilePath, Target, timeSinceStart):
   timeNow = time.strftime("%D:%H:%M")
   timeNow = str(timeNow.replace("/","_").replace(":","-"))
   timeSinceStart = str(timeSinceStart.replace("/","_").replace(":","-"))
-  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeSinceStart+"____"+timeNow+".csv"
+  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeSinceStart+"__"+timeNow+".csv"
   # rename the log file, then create a new temp file
   subprocess.run(["mv", tempFilePath, newFilePath])
   makeTempFile(Target)
