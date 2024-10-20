@@ -125,6 +125,7 @@ def PingMaker(Target):
   lowErrors = True
   # grab the starting time of the function in seconds  This will be used to keep track of how long the function is running so we can do a time based log rotation
   referenceStart = time.time()
+  timeSinceStart = time.strftime("%D:%H:%M")
   # we will set up a file name to be used by other code when appending to the file so I dont have to write the whole path over and over again#
   tempFilePath = "/home/PingMaker/csv/"+Target+"/"+Target+".csv"
   # Error Count, this is to count total errors, if total errors of a certain kind happen often, it will close the thread because it will nto ever succede
@@ -143,13 +144,13 @@ def PingMaker(Target):
         errWrite("Target thread closed due excessive errors for: " + Target)
         lowErrors = False
         #fix the name of the file so you know the timestamp
-        fixInterrupted(tempFilePath, Target, time.strftime("%D:%H:%M"))
+        fixInterrupted(tempFilePath, Target, timeSinceStart)
     #if no error created, tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, so this will limit the pings to about one every one or two seconds. 
     else:
       time.sleep(1)
       # now, check the time that the code has ran for, if its been about 4 hours rotate logs#
     if int((time.time()-referenceStart)/60/60) == 4:
-      rotateLogs(tempFilePath, Target, time.strftime("%D:%H:%M"))
+      rotateLogs(tempFilePath, Target, timeSinceStart)
       referenceStart = time.time()
 
 ########    ----   MAIN     ----    ####### MAYBE DO THE IF MAIN THING#
