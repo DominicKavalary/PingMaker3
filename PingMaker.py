@@ -96,6 +96,14 @@ def getPingArray(Target):
       responseTime = line[line.find("time=")+4:]
   return [timeOfPing,packetLoss,responseTime,errorNote]
 
+### Function to fix erred out targets
+def fixInterrupted(tempFilePath, Target, timeSinceStart):
+  timeNow = time.strftime("%D:%H:%M")
+  timeNow = str(timeNow.replace("/","_").replace(":","-"))
+  timeSinceStart = str(timeSinceStart.replace("/","_").replace(":","-"))
+  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeSinceStart+"____"+timeNow+"_ERRORED.csv"
+  subprocess.run(["mv", tempFilePath, newFilePath])
+
 ### Function to rotate the log files so you dont have excessivly long logs, name the logs the timestamp they logged
 def rotateLogs(tempFilePath, Target, timeSinceStart):
   # get the times turned to strings to add to the name of file
@@ -129,12 +137,13 @@ def PingMaker(Target):
     # Write the data to the target file
     with open(tempFilePath, "a") as tempFile:
       tempFile.write("\n"+pingArray[0]+","+pingArray[1]+","+pingArray[2]+","+pingArray[3])
-    # if there was an error note created, add to the count. , if a large amount has happened, make a note of it. if the name or service isnt known
+    # if there was an error note created, add to the count. , if a large amount has happened, make a note of it. if the name or service isnt known, assume its bad input and close the process so it doesnt take up cpu
     if "NA" not in pingArray[3]:
       errorCount += 1
       if "Name or service not known" in pingArray[3]:
         errWrite("Name or service not known for target: "+Target+", validate target format\nEnding thread for target "+Target+" under the assumption of an improper target")
         knownService = False
+        fixInterrupted(tempFilePath, Target, timeSinceStart)
       if errorCount == 750:
         errWrite("Excessive errors for: " + Target)
         errorCount = 0
