@@ -79,12 +79,16 @@ def fixInterrupted(tempFilePath, Target, reasonType):
 
 ### Function to take a list of targets and set up their temp files
 def targetFileSetup(ListOfTargets):
-  # make directories if they are not already created, then add the file to those directories. if the files are already there, it means something no bueno happened so lets just change the name
+  # make directories if they are not already created, then add the file to those directories. if the files are already there, it means something no bueno happened so lets do something very siimilar to rotating logs where we rename it and remove the odlest log if theres more than 6
   for Target in ListOfTargets:
     subprocess.run(["mkdir", "/home/PingMaker/csv/"+Target])
     if os.path.exists("/home/PingMaker/csv/"+Target+"/"+Target+".csv"):
-      fixInterrupted("/home/PingMaker/csv/"+Target+"/"+Target+".csv",Target,"Pre-INTERUPTED")
+      fixInterrupted("/home/PingMaker/csv/"+Target+"/"+Target+".csv",Target,"INTERUPTED")
       makeTempFile(Target)
+      fileCount = int(getOutput("ls /home/PingMaker/csv/"+Target+" | wc -l")[0])
+      if fileCount > 6:
+        oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Target+" | tail -1")[0]
+        subprocess.run(["rm", "-f", "/home/PingMaker/csv/"+Target+"/"+oldestFile])
     else:
       makeTempFile(Target)
 
