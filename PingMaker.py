@@ -6,6 +6,7 @@ import subprocess
 import ipaddress
 import re
 import random
+import os
 
 #### Function to turn cli output into an array, each line being an item in the array###
 def getOutput(Command):
