@@ -113,7 +113,7 @@ def rotateLogs(tempFilePath, Target, timeSinceStart):
   # rename the log file, then create a new temp file
   subprocess.run(["mv", tempFilePath, newFilePath])
   makeTempFile(Target)
-  # if there are more than 6 logs (24 hours worth), remove the oldest (last modified) file
+  # if there are more than 6 logs (6 hours worth), remove the oldest (last modified) file
   fileCount = int(getOutput("ls /home/PingMaker/csv/"+Target+" | wc -l")[0])
   if fileCount > 6:
     oldestFile = getOutput("ls -t /home/PingMaker/csv/"+Target+" | tail -1")[0]
@@ -148,11 +148,11 @@ def PingMaker(Target):
         errorCount = 0
     #tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, and errors depending on which kind can show up immediatly. so this will limit the pings/errors to about one every one or two seconds. 
     time.sleep(1)
-      # now, check the time that the code has ran for, if its been about 4 hours rotate logs#
-    if int((time.time()-referenceStart)/60/60) == 4:
+      # now, check the time that the code has ran for, if its been about 1 hours rotate logs#
+    if int((time.time()-referenceStart)/60/60) == 1:
       rotateLogs(tempFilePath, Target, timeSinceStart)
       referenceStart = time.time()
-
+      timeSinceStart = time.strftime("%D:%H:%M")
 ########    ----   MAIN     ----    ####### MAYBE DO THE IF MAIN THING#
 # sets up needed directories
 makeDirectories()
