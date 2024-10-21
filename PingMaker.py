@@ -69,12 +69,23 @@ def makeDirectories():
   subprocess.run(["mkdir", "/home/PingMaker/errors"])
   subprocess.run(["touch", "/home/PingMaker/errors/Errors.txt"])
 
+### Function to fix erred out targets
+def fixInterrupted(tempFilePath, Target, reasonType):
+  timeNow = time.strftime("%D:%H:%M")
+  timeNow = str(timeNow.replace("/","_").replace(":","-"))
+  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeNow+"_"+reasonType+".csv"
+  subprocess.run(["mv", tempFilePath, newFilePath])
+
 ### Function to take a list of targets and set up their temp files
 def targetFileSetup(ListOfTargets):
-  # make directories if they are not already created, then add the file to those directories
+  # make directories if they are not already created, then add the file to those directories. if the files are already there, it means something no bueno happened so lets just change the name
   for Target in ListOfTargets:
     subprocess.run(["mkdir", "/home/PingMaker/csv/"+Target])
-    makeTempFile(Target)
+    if os.path.exists("/home/PingMaker/csv/"+Target+"/"+Target+".csv"):
+      fixInterrupted("/home/PingMaker/csv/"+Target+"/"+Target+".csv",Target,"Pre-INTERUPTED")
+      makeTempFile(Target)
+    else:
+      makeTempFile(Target)
 
 ### Function to do a ping command, and return the output as an array of values. The array is: the time of ping, the packet loss, the response time, and any note outputted by the command#
 def getPingArray(Target):
@@ -95,13 +106,6 @@ def getPingArray(Target):
     elif "bytes from" in line:
       responseTime = line[line.find("time=")+4:]
   return [timeOfPing,packetLoss,responseTime,errorNote]
-
-### Function to fix erred out targets
-def fixInterrupted(tempFilePath, Target, reasonType):
-  timeNow = time.strftime("%D:%H:%M")
-  timeNow = str(timeNow.replace("/","_").replace(":","-"))
-  newFilePath = "/home/PingMaker/csv/"+Target+"/"+timeNow+"_"+reasonType+".csv"
-  subprocess.run(["mv", tempFilePath, newFilePath])
 
 ### Function to rotate the log files so you dont have excessivly long logs, name the logs the timestamp they logged
 def rotateLogs(tempFilePath, Target, timeSinceStart):
@@ -156,7 +160,7 @@ def PingMaker(Target):
 ########    ----   MAIN     ----    ####### MAYBE DO THE IF MAIN THING#
 # sets up needed directories
 makeDirectories()
-# Get list of targets Make a directory and a csv file for every target in that list. then, add the header info to it
+# Get list of targets Make a directory and a csv file for every target in that list. then, add the header info to it. Before it makes the files, it checks to see if theyre already there from an unexpected stop, such as suddently powering off the vm.
 ListOfTargets = getTargets()
 targetFileSetup(ListOfTargets)
 
