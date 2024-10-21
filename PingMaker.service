@@ -9,9 +9,9 @@ After=network.target
 
 Type=simple
 
-ExecStartPre=/usr/bin/python3 /home/PingMaker/PingMakerCleanup.py
-
 ExecStart=/usr/bin/python3 /home/PingMaker/PingMaker.py
+
+ExecStopPost=/usr/bin/python3 /home/PingMaker/PingMakerCleanup.py
 
 [Install]
 
