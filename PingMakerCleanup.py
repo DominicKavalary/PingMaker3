@@ -12,6 +12,3 @@ for Target in ListOfTargets:
 
 # log that events had stopped
 errWrite("Service stopped or unexpectantly interupted, attempted to rename all temp files. Renamed csv directory to include time stopped.")
-
-# rename the csv directory so that old target files dont get messed with
-os.rename('/home/PingMaker/csv', '/home/PingMaker/csv_'+timeOfStop)
