@@ -11,7 +11,6 @@ Type=simple
 
 ExecStart=/usr/bin/python3 /home/PingMaker/PingMaker.py
 
-ExecStopPost=/usr/bin/python3 /home/PingMaker/PingMakerCleanup.py
 
 [Install]
 
