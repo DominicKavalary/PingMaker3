@@ -109,7 +109,7 @@ def getPingArray(Target):
     elif "Host Unreachable" in line or "Temporary failure" in line or "Name or service" in line or "Network is unreachable" in line:
       errorNote = line
     elif "bytes from" in line:
-      responseTime = line[line.find("time=")+4:]
+      responseTime = line[line.find("time=")+5:]
   return [timeOfPing,packetLoss,responseTime,errorNote]
 
 ### Function to rotate the log files so you dont have excessivly long logs, name the logs the timestamp they logged
