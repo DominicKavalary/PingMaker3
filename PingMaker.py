@@ -5,7 +5,6 @@ import threading
 import subprocess
 import ipaddress
 import re
-import random
 import os
 
 #### Function to turn cli output into an array, each line being an item in the array###
@@ -14,7 +13,7 @@ def getOutput(Command):
   output = output.splitlines()
   return output
 
-### Function to write errors to our error file ### LEAVE OUT THE BITS FOR RANDOM RETRYING FOR NOW AND WELL SEE HOW IT GOES
+### Function to write errors to our error file 
 def errWrite(Message):
   with open("/home/PingMaker/errors/Errors.txt", "a") as errfile:
     errfile.write("\n"+Message)
@@ -170,10 +169,11 @@ ListOfTargets = getTargets()
 targetFileSetup(ListOfTargets)
 
 # Start a thread per target. Each thread will ping the target and log to their own files. spreads the starting of threads by waiting fractions of a second so that the pings dont all happen liek once like a firing squad and mess up the cpu
+waitTime = 1/len(ListOfTargets)
 for Target in ListOfTargets:
   PingThread = threading.Thread(target=PingMaker, args=(Target,))
   PingThread.start()
-  time.sleep(random.random()/3)
+  time.sleep(waitTime)
   
 
 
