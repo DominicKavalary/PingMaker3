@@ -1,1 +1,20 @@
-DEAL WITH PRE AND POST START, FIGURE OUT WHAT YOU WANBT^
+### For Simple Install ###
+
+## Prep ##
+# on an ubuntu server VM #
+- mkdir /home/PingMaker
+- cd /home/PingMaker
+- wget https://raw.githubusercontent.com/DominicKavalary/PingMaker3/refs/heads/main/PingMaker.py
+- chmod 777 PingMaker.py
+- nano /etc/systemd/system/PingMaker.service
+  Copy paste the contents of the PingMaker.service file in the repository
+- systemctl enable PingMaker.py
+- systemctl daemon reload
+- nano PingTargets.txt
+  Define your targets here, with the following formats accepted, and each target or target range seperated by new lines
+-------
+192.168.1.1
+192.168.1.0/24
+google.com
+-------
+systemctl start PingMaker
