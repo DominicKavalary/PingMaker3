@@ -157,7 +157,7 @@ def PingMaker(Target):
     #tell the program to wait a second. this is because a succesfull ping will generally happen pretty quick, and errors depending on which kind can show up immediatly. so this will limit the pings/errors to about one every one or two seconds. 
     time.sleep(1)
       # now, check the time that the code has ran for, if its been about 1 hours rotate logs#
-    if int((time.time()-referenceStart)/60/60) == 4:
+    if int((time.time()-referenceStart)/60/60) >= 4:
       rotateLogs(tempFilePath, Target, timeSinceStart)
       referenceStart = time.time()
       timeSinceStart = time.strftime("%D:%H:%M")
