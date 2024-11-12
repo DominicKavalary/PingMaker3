@@ -21,6 +21,7 @@ systemctl start PingMaker
 
 ########## Limitations #############
 - Linux has a limit to how many files can be opened at once, with how the code works it opens and closes csv files a lot so that could cause some issues with a vast amount of targets. You can increase this limit to a degree.
+  possible fix is to set up a database for the information and have python make calls to submit the data to the database.
 - Currently with how the files are created and seperated, while organized, is not very centralized. You have to traverse to the individual directories to find the info you want.
   possible fix would be to have a we server accessable with a gui set up to help you find and download the csv files you need
 - cli only
