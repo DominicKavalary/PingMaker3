@@ -18,3 +18,10 @@
 google.com
 -------
 systemctl start PingMaker
+
+########## Limitations #############
+- Linux has a limit to how many files can be opened at once, with how the code works it opens and closes csv files a lot so that could cause some issues with a vast amount of targets. You can increase this limit to a degree.
+- Currently with how the files are created and seperated, while organized, is not very centralized. You have to traverse to the individual directories to find the info you want.
+  possible fix would be to have a we server accessable with a gui set up to help you find and download the csv files you need
+- cli only
+- meant for parsing through ubuntu ping responses and making directories in linux. OSs do ping outputs slightly differently so for windows almost all the code would be the same except for how it grabs the data from the ping response and how it creates the files and directories. pretty customizable otherwise
