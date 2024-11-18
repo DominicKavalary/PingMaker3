@@ -8,8 +8,8 @@
 - chmod 777 PingMaker.py
 - nano /etc/systemd/system/PingMaker.service
   Copy paste the contents of the PingMaker.service file in the repository
-- systemctl enable PingMaker.py
-- systemctl daemon reload
+- systemctl enable PingMaker.service
+- systemctl daemon-reload
 - nano PingTargets.txt
   Define your targets here, with the following formats accepted, and each target or target range seperated by new lines
 -------
